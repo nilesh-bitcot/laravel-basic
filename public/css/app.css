@@ -1,0 +1,17 @@
+.card {
+    margin-right: 10px;
+}
+.card img {
+    height: 175px;
+    max-height: 175px;
+}
+.message-single .card img {
+    max-height: 100% !important;
+    height: auto !important;
+}
+.img-wrap {
+    margin-bottom: 10px;
+}
+h2 > span.links {
+    font-size: .85rem;
+}

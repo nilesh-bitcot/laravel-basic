@@ -4,32 +4,56 @@
 
 @section('content')
 
-<h2>Post Message</h2>
+@if (count($errors) > 0)
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
-<form action="/create" method="post" enctype="multipart/form-data">
+@if ($message = Session::get('success'))
+    <div class="alert alert-success alert-block">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        <strong>{{ $message }}</strong>
+    </div>
+@endif
 
-    <input type="text" name="title" placeholder="title"><br>
-    <input type="text" name="content" placeholder="content"><br>
-    <input type="file" name="image" id="image" />
-    {{ csrf_field() }}
-    <button type="submit">submit</button>
+<div class="row">
+    <div class="col-sm-12">
+        <h2>Post Message</h2>
 
-</form>
+        <form action="/create" method="post" enctype="multipart/form-data">
 
+            <input type="text" class="form-control" name="title" placeholder="title"><br>
+            <input type="text" class="form-control" name="content" placeholder="content"><br>
+            <div class="mb-3">
+                <input type="file" class="form-control" name="image" id="image" />
+            </div>
+            {{ csrf_field() }}
+            <button type="submit" class="btn btn-primary">submit</button>
 
-
-<h2>Recent Messages</h2>
-
-<ul>
-    @foreach( $messages as $message )
-    <li>
-        {{ $message->title }} <br>
-        {{ $message->content }} <br>
-        {{ $message->created_at->diffForHumans() }} - 
-        {{ $message->created_at->format('d-m-Y') }} <br>
-        <a href="/message/{{ $message->id }}">view</a>
-    </li>
-    @endforeach
-</ul>
+        </form>
+    </div>
+</div>
+<dir class="row">
+    <div class="col-sm-12">
+        <h2>Recent Messages</h2>
+        @foreach( $messages as $message )
+            <div class="card" style="max-width:300px; float: left;">
+                <img src="{{ asset('images/'.$message->image) }}" width="300" alt="image" class="card-img-top" />
+                <!-- <img src="{{ url('storage/app/uploads/'.$message->image) }}" alt="image" /> -->
+                <div class="card-body">
+                    <h4 class="card-title">{{ $message->title }}</h4>
+                    <p class="card-text">{{ $message->content }}</p>
+                    <p class="card-text small">{{ $message->created_at->diffForHumans() }} - {{ $message->created_at->format('d-m-Y') }}</p>
+                    <a href="/message/{{ $message->id }}" class="btn btn-primary">Read more</a>
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div>
 
 @endsection

@@ -15,28 +15,30 @@ class MessageController extends Controller
     public function create(Request $request) {
         $message = new Message();
 
+        $request->validate([
+            'title' => 'required',
+            'content' => 'required'
+        ]);
+
         $message->title = $request->title;
         $message->content = $request->content;
 
         if ($request->hasfile('image')) {
             $image = $request->file('image');
             $filename = time() . '.' . $image->getClientOriginalExtension();
-            // $location = storage_path('app/public/images/') . $filename;
             $image->storeAs('uploads', $filename); // this will upload file in /storage/app/uploads 
-            // $image->storeAs('uploads');
-            // $image->store('uploads');
             $image->move('images', $filename); // this will upload files in /public/images folder
     
-        //    Image::make($image)->save($location);
-        //     Storage::disk('uploads')->put($filename);
-        //     Storage::disk('local',$filename, 'local');
-    
             $message->image = $filename;
+        }else{
+            $message->image = 'placeholder.png';
         }
         $message->save();
         // die;
 
-        return redirect('/');
+        // return back()->with('success','User Created Successfully');
+
+        return redirect('/')->with('success','Post Created Successfully');
 
     }
 
@@ -51,21 +53,38 @@ class MessageController extends Controller
         // $message->title = $request->title;
         // $message->content = $request->content;
         // $message->save();
-        Message::updateOrCreate(
+        // echo $request->meta_key; die;
+
+        $message = Message::updateOrCreate(
             ['id' => $request->id ],
             [
                 'title' => $request->title,
                 'content' => $request->content 
             ]
         );
+        /*$message->messagemeta()->create(
+            [
+                'meta_key' => $request->meta_key,
+                'meta_value' => $request->meta_value 
+            ]
+        );*/
+
+        $message->messagemeta()->updateOrCreate(
+            ['message_id' => $request->id ],
+            [
+                'meta_key' => $request->meta_key,
+                'meta_value' => $request->meta_value 
+            ]
+        );
+        // $$message
 
         return redirect('/');
     }
 
     public function view($id) {
         $message = Message::find($id);
-        $messageMeta = Message::find($id)->messagemeta;
-        
+        $messageMeta = $message->messagemeta;
+        // print_r($messageMeta);
         if( !$message ) return redirect('/');
         return view('message',
             [
