@@ -18,15 +18,18 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="/">Home</a>
                     </li>
+                    @if(Auth::check())
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/logout">Log out</a>
+                    </li>
+                    @else
                     <li class="nav-item">
                         <a class="nav-link active" href="/login">Login</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" href="/register">Register</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/logout">Log out</a>
-                    </li>
+                    @endif
                 </ul>
             </div>
         </nav>
