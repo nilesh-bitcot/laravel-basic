@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Storage; 
+use Illuminate\Support\Facades\File; 
 
 // use Image;
 
@@ -44,8 +45,35 @@ class MessageController extends Controller
 
     public function delete($id) {
         $message = Message::findOrFail($id);
+        $imageName = public_path().'/images/'.$message->image;
         $message->delete();
+        File::delete($imageName);
         return redirect('/');
+    }
+
+    public function deleteImage($id) {
+        $message = Message::findOrFail($id);
+        $imageName = public_path().'/images/'.$message->image;
+        $storateImageName = public_path().'/storage/'.$message->image;
+        File::delete( [$imageName, $storateImageName]);
+        $message->image = '';
+        $message->update();
+        return redirect('/message/'.$id);
+
+    }
+
+    public function addImage( Request $request ) {
+        $message = Message::findOrFail($request->id);
+
+        if ($request->hasfile('image')) {
+            $image = $request->file('image');
+            $filename = time() . '.' . $image->getClientOriginalExtension();
+            $image->storeAs('public', $filename);
+            $image->move('images', $filename);
+            $message->image = $filename;
+        }
+        $message->update();
+        return redirect('/message/'.$request->id);
     }
 
     public function update(Request $request) {
@@ -82,14 +110,13 @@ class MessageController extends Controller
     }
 
     public function view($id) {
+        // $message = Message::with('messagemeta')->find($id);
         $message = Message::find($id);
-        $messageMeta = $message->messagemeta;
-        // print_r($messageMeta);
+        // $messageMeta = $message->messagemeta;
         if( !$message ) return redirect('/');
         return view('message',
             [
-                'message' => $message,
-                'messagemeta' => $messageMeta
+                'message' => $message
             ]
         );
     }

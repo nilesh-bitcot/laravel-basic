@@ -21,6 +21,10 @@ Route::get('/message/{id}', 'MessageController@view');
 
 Route::get('/delete/{id}', 'MessageController@delete');
 
+Route::get('/delete-image/{id}', 'MessageController@deleteImage');
+
+Route::post('/add-image', 'MessageController@addImage');
+
 Route::post('/update', 'MessageController@update');
 
 Route::get('/login', 'AuthController@index');
